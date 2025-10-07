@@ -1,0 +1,53 @@
+// This code was made by Miguel
+
+const int PWM_PIN = 7;
+const int DIR_PIN = 6;
+ 
+const int ENCODER_A = 2;
+const int ENCODER_B = 3;
+ 
+volatile long encoderCount = 0;
+ 
+const int LIMIT_PIN = 9;
+ 
+ 
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(LIMIT_PIN, INPUT_PULLUP);
+  pinMode(PWM_PIN, OUTPUT);
+  pinMode(DIR_PIN, OUTPUT);
+ 
+  pinMode(ENCODER_A, INPUT);
+  pinMode(ENCODER_B, INPUT);
+ 
+  attachInterrupt(digitalPinToInterrupt(ENCODER_A), encoderISR, RISING);
+ 
+  Serial.begin(9600);
+ analogWrite(PWM_PIN, 0);
+}
+ 
+void loop() {
+ 
+    if (digitalRead(LIMIT_PIN) == LOW) {
+ //   Serial.println("Limit switch pressed!");
+    digitalWrite(DIR_PIN, HIGH);
+    analogWrite(PWM_PIN,250);
+  }else
+  {
+    analogWrite(PWM_PIN, 0);      // stop motor
+  }
+ 
+  Serial.print("Encoder count: ");
+  Serial.println(encoderCount);
+ 
+}
+ 
+void encoderISR() {
+  int bState = digitalRead(ENCODER_B);
+  if (bState == HIGH) {
+    encoderCount++;
+  } else {
+    encoderCount--;
+  }
+}
+ 
